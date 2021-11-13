@@ -19,7 +19,8 @@
       "help": "task --list",
       "prepare": "task common:husky",
       "start": "bash .config/start.sh",
-      "test": "cd .shared && git pull origin master && cd .. && cp -rT .shared/common/ . && task start"
+      "test": "cd .common-shared && git pull origin master && cd .. && cp -rT .common-shared/common/ . && task start",
+      "test:clone": "git clone https://gitlab.com/megabyte-labs/common/shared.git .common-shared"
     },
     "config": {
       "commitizen": {
