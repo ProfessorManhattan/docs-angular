@@ -3,9 +3,9 @@ version: '3'
 
 vars:
   COMMON_FILES_URL: https://gitlab.com/megabyte-labs/common/shared.git
-  COMMON_FOLDER: '.common'
+  COMMON_FOLDER: .common
   SHARED_DOCS_URL: https://gitlab.com/megabyte-labs/documentation/shared.git
-  SHARED_FOLDER: '.shared'
+  SHARED_FOLDER: .shared
 
 tasks:
   clean:
@@ -77,12 +77,8 @@ tasks:
       - task: :upstream:project:template:files
 
   template:variables:
-    deps:
-      - :install:software:jq
     cmds:
-      - jq --arg blueprint "$(jq -r '.blueprint' package.json | sed 's/^null$/{}/')"
-        --arg version "$(jq -r '.version' package.json | sed 's/^null$/0.0.1/')"
-        --arg poetry "$(jq -r '.keywords | join("\", \"")' package.json | sed 's/$/"/' | sed 's/^/"/')"
-        -S '. = (. * ($blueprint | fromjson)) | .version = $version | .poetryKeywords = $poetry'
-        variables.json > ./.variables.json
-
+      - task: :upstream:variables
+        vars:
+          INPUT_FILE: variables.json
+          OUTPUT_FILE: ./.variables.json

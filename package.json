@@ -1,6 +1,6 @@
 {
   "private": false,
-  "name": "@megabytelabs/docs-angular",
+  "name": "@mblabs/docs-angular",
   "version": "0.0.1",
   "description": "Documentation partials used to generate documentation for Angular projects",
   "license": "MIT",
@@ -18,9 +18,7 @@
   "scripts": {
     "help": "task --list",
     "prepare": "task common:husky",
-    "start": "bash .config/start.sh",
-    "test": "cd .common-shared && git pull origin master && cd .. && cp -rT .common-shared/common/ . && task start",
-    "test:clone": "git clone https://gitlab.com/megabyte-labs/common/shared.git .common-shared"
+    "start": "bash .config/start.sh"
   },
   "config": {
     "commitizen": {
@@ -32,8 +30,9 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^13.1.0",
-    "@megabytelabs/eslint-config": "^1.0.0",
-    "@megabytelabs/prettier-config": "^14.14.14",
+    "@mblabs/eslint-config": "^1.0.0",
+    "@mblabs/prettier-config": "^14.14.14",
+    "@types/node": "^16.11.7",
     "@typescript-eslint/eslint-plugin": "^5.2.0",
     "cz-conventional-changelog": "^3.3.0",
     "handlebars-helpers": "^0.10.0"
@@ -74,11 +73,7 @@
     "title": "Angular Documentation Partials"
   },
   "eslintConfig": {
-    "extends": "@megabytelabs/eslint-config",
-    "rules": {
-      "import/no-extraneous-dependencies": "off",
-      "import/no-unresolved": "off"
-    }
+    "extends": "@mblabs/eslint-config"
   },
   "funding": [
     {
@@ -131,7 +126,7 @@
       "task image:compress --"
     ]
   },
-  "prettier": "@megabytelabs/prettier-config",
+  "prettier": "@mblabs/prettier-config",
   "standard-version": {
     "scripts": {
       "prerelease": "git add --all"

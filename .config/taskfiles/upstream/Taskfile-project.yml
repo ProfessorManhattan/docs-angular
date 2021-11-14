@@ -3,7 +3,7 @@ version: '3'
 
 vars:
   PROJECT_COMMON_URL: https://gitlab.com/megabyte-labs/common/{{.REPOSITORY_TYPE}}.git
-  SHARED_FOLDER: '.shared'
+  SHARED_FOLDER: .shared
 
 tasks:
   clean:
@@ -37,7 +37,7 @@ tasks:
     env:
       BLUEPRINT:
         sh: jq -r '.blueprint' package.json
-      TMP:
+      PKG_TMP:
         sh: mktemp
     cmds:
       - |
@@ -54,8 +54,8 @@ tasks:
         ensureKeywords package.json
       - jq --arg blueprint "$BLUEPRINT" --arg keywords "$(jq '.keywords[]' package.json package.hbs.json | jq -s '. | unique')"
         -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .blueprint = ($blueprint | fromjson) | .' package.json
-        package.hbs.json > "$TMP"
-      - mv "$TMP" package.hbs.json
+        package.hbs.json > "$PKG_TMP"
+      - mv "$PKG_TMP" package.hbs.json
 
   merge:package:json-blueprint-overrides:
     summary: |
@@ -110,19 +110,6 @@ tasks:
       - template:files:handlebars
       - template:files:hbs
 
-  template:files:hbs:
-    cmds:
-      - |
-        function handlebars() {
-          FILE="$1"
-          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
-          rm "$FILE"
-        }
-        find . -type f -not \( {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
-          handlebars "$FILE" &
-        done
-        wait
-
   template:files:handlebars:
     cmds:
       - |
@@ -136,13 +123,22 @@ tasks:
         done
         wait
 
-  template:variables:
-    deps:
-      - :install:software:jq
+  template:files:hbs:
     cmds:
-      - jq --arg blueprint "$(jq -r '.blueprint' package.json | sed 's/^null$/{}/')"
-        --arg version "$(jq -r '.version' package.json | sed 's/^null$/0.0.1/')"
-        --arg poetry "$(jq -r '.keywords | join("\", \"")' package.json | sed 's/$/"/' | sed 's/^/"/')"
-        --arg encoded "$(jq -r '.blueprint.repository.gitlab' package.json | sed 's/https:\/\/gitlab.com\///' | sed 's/\//%252F/g')"
-        -S '. = (. * ($blueprint | fromjson)) | .version = $version | .poetryKeywords = $poetry | .gitlab_encoded_path = $encoded'
-        .config/variables.json > ./.variables.json
+      - |
+        function handlebars() {
+          FILE="$1"
+          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
+          rm "$FILE"
+        }
+        find . -type f -not \( {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
+          handlebars "$FILE" &
+        done
+        wait
+
+  template:variables:
+    cmds:
+      - task: :upstream:variables
+        vars:
+          INPUT_FILE: .config/variables.json
+          OUTPUT_FILE: ./.variables.json

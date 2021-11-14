@@ -2,10 +2,10 @@
 version: '3'
 
 vars:
-  COMMON_FOLDER: '.common'
+  COMMON_FOLDER: .common
   DOCS_URL: https://gitlab.com/megabyte-labs/documentation/{{.REPOSITORY_SUBTYPE}}
   SHARED_COMMON_URL: https://gitlab.com/megabyte-labs/common/shared.git
-  SHARED_FOLDER: '.shared'
+  SHARED_FOLDER: .shared
 
 tasks:
   clean: rm -rf {{.SHARED_FOLDER}}
@@ -86,7 +86,8 @@ tasks:
 
           # Merge the files
           TMP="$(mktemp)"
-          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$TMP"
+          jq --arg keywords "$(jq '.keywords[]' "$1" "$2" | jq -s '. | unique')" -s -S \
+            '.[0] * .[1] | .keywords = ($keywords | fromjson) | .' "$1" "$2" > "$TMP"
           mv "$TMP" "$3"
         }
 
@@ -139,7 +140,8 @@ tasks:
     cmds:
       - |
         if [ -f "project/.config/variables.json" ]; then
-          jq -s -S '.[0] * .[1]' "./{{.COMMON_FOLDER}}/.config/docs/variables.json" "project/.config/variables.json" > "./{{.COMMON_FOLDER}}/.config/variables.json"
+          jq -s -S '.[0] * .[1]' "./{{.COMMON_FOLDER}}/.config/docs/variables.json" \
+            "project/.config/variables.json" > "./{{.COMMON_FOLDER}}/.config/variables.json"
         else
           cp ./{{.COMMON_FOLDER}}/.config/docs/variables.json ./{{.COMMON_FOLDER}}/.config/variables.json
         fi
@@ -186,7 +188,24 @@ tasks:
       - template:files:handlebars
       - template:files:hbs
 
+  template:files:handlebars:
+    vars:
+      IGNORES: -o -path './project*' -o -path './deprecated*' -o
+    cmds:
+      - |
+        function handlebars() {
+          FILE="$1"
+          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
+          rm "$FILE"
+        }
+        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' {{.IGNORES}} {{.IGNORE_FOLDERS}} \) -prune -name '*.handlebars' | while read FILE; do
+          handlebars "$FILE" &
+        done
+        wait
+
   template:files:hbs:
+    vars:
+      IGNORES: -o -path './project*' -o -path './deprecated*' -o
     cmds:
       - if [ -f "package.hbs.json" ]; then mv package.hbs.json tmp.package.hbs.json; fi
       - |
@@ -195,7 +214,7 @@ tasks:
           {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE//.hbs}"
           rm "$FILE"
         }
-        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './project*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
+        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' {{.IGNORES}} {{.IGNORE_FOLDERS}} \) -prune -name '*.hbs.*' | while read FILE; do
           handlebars "$FILE" &
         done
         wait
@@ -206,25 +225,9 @@ tasks:
         mv "$TMP" package.json
       - rm tmp.package.json
 
-  template:files:handlebars:
-    cmds:
-      - |
-        function handlebars() {
-          FILE="$1"
-          {{.NPX_HANDLE}}hbs --data .variables.json --helper ./.config/hbs.cjs "$FILE" --stdout > "${FILE%.*}"
-          rm "$FILE"
-        }
-        find . -type f -not \( -path './{{.COMMON_FOLDER}}*' -o -path './project*' -o -path './deprecated*' -o {{.IGNORE_FOLDERS}} \) -prune -name '*.handlebars' | while read FILE; do
-          handlebars "$FILE" &
-        done
-        wait
-
   template:variables:
-    deps:
-      - :install:software:jq
     cmds:
-      - jq --arg blueprint "$(jq -r '.blueprint' package.json | sed 's/^null$/{}/')"
-        --arg version "$(jq -r '.version' package.json | sed 's/^null$/0.0.1/')"
-        --arg poetry "$(jq -r '.keywords | join("\", \"")' package.json | sed 's/$/"/' | sed 's/^/"/')"
-        -S '. = (. * ($blueprint | fromjson)) | .version = $version | .poetryKeywords = $poetry'
-        ./{{.COMMON_FOLDER}}/.config/docs/variables.json > ./.variables.json
+      - task: :upstream:variables
+        vars:
+          INPUT_FILE: ./{{.COMMON_FOLDER}}/.config/docs/variables.json
+          OUTPUT_FILE: ./.variables.json
