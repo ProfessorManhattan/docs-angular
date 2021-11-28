@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://megabyte.space"
 documentation = "https://megabyte.space/docs/documentation/angular"
-keywords = ["angular", "common", "docs", "documentation", "megabytelabs", "ng", "npm", "package", "partials", "professormanhattan", "shared"]
+keywords = ["angular", "common", "docs", "documentation", "mblabs", "megabytelabs", "ng", "npm", "package", "partials", "professormanhattan", "shared"]
 include = ["CHANGELOG.md", "LICENSE"]
 classifiers = [
   "Development Status :: 4 - Beta",
