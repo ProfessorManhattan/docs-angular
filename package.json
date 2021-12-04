@@ -49,6 +49,9 @@
   },
   "blueprint": {
     "description": "A repository that houses documentation for Angular projects",
+    "github_id": "R_kgDOGetf-g",
+    "gitlab_group_id": "11096751",
+    "gitlab_project_id": "25919224",
     "group": "documentation",
     "name": "Angular Docs",
     "overview": "This repository houses a collection of documentation partials used to construct engaging READMEs and CONTRIBUTING guides. Leveraging the system allows us to maintain and continually improve all of our documentation.",
@@ -58,10 +61,7 @@
     },
     "slug": "docs-angular",
     "subgroup": "angular",
-    "title": "Angular Documentation Partials",
-    "github_id": "R_kgDOGetf-g",
-    "gitlab_project_id": "25919224",
-    "gitlab_group_id": "11096751"
+    "title": "Angular Documentation Partials"
   },
   "commitlint": {
     "extends": [
