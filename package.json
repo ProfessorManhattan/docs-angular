@@ -2,7 +2,7 @@
   "private": false,
   "name": "@mblabs/docs-angular",
   "version": "0.0.1",
-  "description": "Documentation partials used to generate documentation for Angular projects",
+  "description": "A repository that houses documentation for Angular projects",
   "license": "MIT",
   "author": "Brian Zalewski <brian@megabyte.space> (https://megabyte.space)",
   "homepage": "https://megabyte.space",
@@ -23,43 +23,23 @@
   },
   "config": {
     "commitizen": {
-      "path": "cz-emoji"
+      "path": "node_modules/cz-emoji-conventional"
     }
   },
-  "dependencies": {
-    "tslib": "^2.3.1"
-  },
-  "optionalDependencies": {
-    "chalk": "^4.1.2",
-    "inquirer": "^8.2.0",
-    "signale": "^1.4.0",
-    "string-break": "^1.2.0"
-  },
+  "dependencies": {},
+  "optionalDependencies": {},
   "devDependencies": {
-    "@commitlint/config-conventional": "^13.1.0",
-    "@mblabs/eslint-config": "^1.0.114",
-    "@mblabs/prettier-config": "^14.14.30",
-    "@mblabs/release-config": "^1.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.2.0",
-    "commitlint-config-gitmoji": "^2.2.5",
-    "cz-conventional-changelog": "^3.3.0",
-    "glob": "^7.2.0",
-    "handlebars-helpers": "^0.10.0",
-    "semantic-release": "^18.0.0"
+    "@washingtondc/development": "^1.0.2",
+    "@washingtondc/prettier": "^1.0.0",
+    "@washingtondc/release": "^0.0.2",
+    "eslint-config-strict-mode": "^1.0.0",
+    "sleekfast": "^0.0.1"
   },
   "keywords": [
-    "angular",
-    "common",
-    "docs",
-    "documentation",
     "mblabs",
     "megabytelabs",
-    "ng",
-    "npm",
-    "package",
-    "partials",
     "professormanhattan",
-    "shared"
+    "washingtondc"
   ],
   "engines": {
     "node": ">=14.18.0"
@@ -68,23 +48,32 @@
     "access": "public"
   },
   "blueprint": {
-    "description": "Documentation partials used to generate documentation for Angular projects",
-    "docs": {
-      "link": "https://megabyte.space/docs/documentation/angular"
-    },
+    "description": "A repository that houses documentation for Angular projects",
     "group": "documentation",
-    "name": "Angular Documentation",
-    "overview": "This repository contains documentation partials used to generate documentation for Angular projects. It uses the partials in conjunction with a plethora of variables that are used to generate unique documentation that follow the same format. When this project is updated, the changes are propagated to the [Angular common files repository](https://gitlab.com/megabyte-labs/common/angular) which in turn propagates its changes to individual Angular projects.",
+    "name": "Angular Docs",
+    "overview": "This repository houses a collection of documentation partials used to construct engaging READMEs and CONTRIBUTING guides. Leveraging the system allows us to maintain and continually improve all of our documentation.",
     "repository": {
       "github": "https://github.com/ProfessorManhattan/docs-angular",
       "gitlab": "https://gitlab.com/megabyte-labs/documentation/angular"
     },
     "slug": "docs-angular",
     "subgroup": "angular",
-    "title": "Angular Documentation Partials"
+    "title": "Angular Documentation Partials",
+    "github_id": "R_kgDOGetf-g",
+    "gitlab_project_id": "25919224",
+    "gitlab_group_id": "11096751"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "helpUrl": "https://megabyte.space/docs/contributing/commits"
   },
   "eslintConfig": {
-    "extends": "@mblabs/eslint-config"
+    "extends": "eslint-config-strict-mode",
+    "rules": {
+      "import/no-extraneous-dependencies": "off"
+    }
   },
   "funding": [
     {
@@ -118,7 +107,6 @@
       "task fix:json --"
     ],
     "**/*.sh": [
-      "task fix:shell --",
       "task lint:shell --"
     ],
     "**/*.toml": [
@@ -137,12 +125,12 @@
       "task image:compress --"
     ]
   },
-  "prettier": "@mblabs/prettier-config",
+  "prettier": "@washingtondc/prettier",
   "release": {
     "branches": [
       "master",
       "next"
     ],
-    "extends": "@mblabs/release-config"
+    "extends": "@washingtondc/release"
   }
 }
